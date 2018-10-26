@@ -13,6 +13,9 @@
 		F7B484E12183005E00731093 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7B484E02183005E00731093 /* Assets.xcassets */; };
 		F7B484E42183005E00731093 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7B484E22183005E00731093 /* LaunchScreen.storyboard */; };
 		F7B484E72183005E00731093 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B484E62183005E00731093 /* main.m */; };
+		F7B484EF218300E400731093 /* SecondViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B484EE218300E400731093 /* SecondViewController.m */; };
+		F7B484F2218300F400731093 /* ThirdViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B484F1218300F400731093 /* ThirdViewController.m */; };
+		F7B484F52183010600731093 /* FourthViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B484F42183010600731093 /* FourthViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +29,12 @@
 		F7B484E32183005E00731093 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		F7B484E52183005E00731093 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F7B484E62183005E00731093 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		F7B484ED218300E400731093 /* SecondViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SecondViewController.h; sourceTree = "<group>"; };
+		F7B484EE218300E400731093 /* SecondViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SecondViewController.m; sourceTree = "<group>"; };
+		F7B484F0218300F400731093 /* ThirdViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ThirdViewController.h; sourceTree = "<group>"; };
+		F7B484F1218300F400731093 /* ThirdViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ThirdViewController.m; sourceTree = "<group>"; };
+		F7B484F32183010600731093 /* FourthViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FourthViewController.h; sourceTree = "<group>"; };
+		F7B484F42183010600731093 /* FourthViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FourthViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,6 +71,12 @@
 				F7B484D82183005C00731093 /* AppDelegate.m */,
 				F7B484DA2183005C00731093 /* ViewController.h */,
 				F7B484DB2183005C00731093 /* ViewController.m */,
+				F7B484ED218300E400731093 /* SecondViewController.h */,
+				F7B484EE218300E400731093 /* SecondViewController.m */,
+				F7B484F0218300F400731093 /* ThirdViewController.h */,
+				F7B484F1218300F400731093 /* ThirdViewController.m */,
+				F7B484F32183010600731093 /* FourthViewController.h */,
+				F7B484F42183010600731093 /* FourthViewController.m */,
 				F7B484DD2183005C00731093 /* Main.storyboard */,
 				F7B484E02183005E00731093 /* Assets.xcassets */,
 				F7B484E22183005E00731093 /* LaunchScreen.storyboard */,
@@ -141,6 +156,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F7B484F52183010600731093 /* FourthViewController.m in Sources */,
+				F7B484EF218300E400731093 /* SecondViewController.m in Sources */,
+				F7B484F2218300F400731093 /* ThirdViewController.m in Sources */,
 				F7B484DC2183005C00731093 /* ViewController.m in Sources */,
 				F7B484E72183005E00731093 /* main.m in Sources */,
 				F7B484D92183005C00731093 /* AppDelegate.m in Sources */,
