@@ -90,7 +90,7 @@
     CGFloat blockInt = 10;
     __weak __typeof(self)weakSelf = self;
     self.tmpBlock = ^{
-        __strong ThirdViewController *strongSelf = weakSelf;
+        __strong ThirdViewController *strongSelf = weakSelf;//此时strongSelf是一个局部变量，block执行完成后，strongSelf释放，self的引用基数为0，self释放，self释放后block的引用计数为减为0，block释放。
         NSLog(@"blockInt = %f", blockInt);
         NSLog(@"tmpString：%@",strongSelf.tmpString);
     };
