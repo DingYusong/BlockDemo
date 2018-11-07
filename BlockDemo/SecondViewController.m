@@ -31,6 +31,13 @@
     
     self.view.backgroundColor = [UIColor whiteColor];
     
+    NSInteger job = 1;
+    CGFloat jobf = 1.0;
+    
+    
+    NSLog(@"%p",&job);
+    NSLog(@"%p",&jobf);
+    NSLog(@"%d",sizeof(NSInteger));
     // Do any additional setup after loading the view.
     
     self.tmpString = @"asdfasdf";
