@@ -231,8 +231,16 @@
     blockInt ++;
     NSLog(@"blockInt In stack = %f", blockInt);
     playblock();
+    
+    void (^blockName)(void) = ^void{
+        NSLog(@"block running");
+    };
+    [self executeBlock:blockName];
+    
+    [self executeBlock:^ void {
+        NSLog(@"haha");
+    }];
 }
-
 
 
 -(void)executeBlock:(void(^)(void))completion{
