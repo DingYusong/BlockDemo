@@ -13,17 +13,11 @@
 
 #import "DYSDog.h"
 
-typedef NSInteger (^blockNameAdd)(NSInteger, NSInteger);
 
 @interface ViewController () <UITableViewDelegate, UITableViewDataSource>
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (nonatomic, copy) NSArray *dataSourceArray;
-
-//returnType (^blockName)(parameterTypes);
-@property (nonatomic, copy) NSInteger (^add)(NSInteger, NSInteger);
-//变量类型 变量名;
-@property (nonatomic, strong) DYSDog *dog;
 
 @end
 
