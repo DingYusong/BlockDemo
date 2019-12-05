@@ -1,5 +1,5 @@
 //
-//  SecondViewController.h
+//  DYSDemo02ViewController.h
 //  BlockDemo
 //
 //  Created by 丁玉松 on 2018/10/26.
@@ -7,10 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
+//返回值(^别名)(参数值)
+typedef void(^playBlock)(void);
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SecondViewController : UIViewController
+@interface DYSDemo02ViewController : UIViewController
 
 @end
 

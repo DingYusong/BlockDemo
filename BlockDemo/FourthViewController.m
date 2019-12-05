@@ -14,22 +14,22 @@
 
 @implementation FourthViewController
 
--(void)dealloc{
+- (void)dealloc {
     NSLog(@"FourthViewController 释放了");
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor whiteColor];
-    
+
     if (self.myblock) {
         self.myblock();
     }
-    
+
     // Do any additional setup after loading the view.
 }
 
-- (void)helloFourth{
+- (void)helloFourth {
     NSLog(@"hello Forth");
 }
 

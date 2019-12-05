@@ -1,22 +1,22 @@
 //
-//  ThirdViewController.m
+//  DYSDemo02ViewController.m
 //  BlockDemo
 //
 //  Created by 丁玉松 on 2018/10/26.
 //  Copyright © 2018 丁玉松. All rights reserved.
 //
 
-#import "ThirdViewController.h"
+#import "DYSDemo02ViewController.h"
 #import "FourthViewController.h"
 
-@interface ThirdViewController ()
+@interface DYSDemo02ViewController ()
 @property (nonatomic ,copy) NSString *tmpString;
 
 @property (nonatomic ,copy) playBlock tmpBlock;
 
 @end
 
-@implementation ThirdViewController
+@implementation DYSDemo02ViewController
 
 - (void)dealloc{
     NSLog(@"ThirdViewController 释放了");
@@ -90,7 +90,7 @@
     CGFloat blockInt = 10;
     __weak __typeof(self)weakSelf = self;
     self.tmpBlock = ^{
-        __strong ThirdViewController *strongSelf = weakSelf;//此时strongSelf是一个局部变量，block执行完成后，strongSelf释放，self的引用基数为0，self释放，self释放后block的引用计数为减为0，block释放。
+        __strong DYSDemo02ViewController *strongSelf = weakSelf;//此时strongSelf是一个局部变量，block执行完成后，strongSelf释放，self的引用基数为0，self释放，self释放后block的引用计数为减为0，block释放。
         NSLog(@"blockInt = %f", blockInt);
         NSLog(@"tmpString：%@",strongSelf.tmpString);
     };

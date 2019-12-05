@@ -7,13 +7,13 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "ThirdViewController.h"
+#import "DYSDemo02ViewController.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface FourthViewController : UIViewController
 
-@property (nonatomic ,copy) playBlock myblock;
+@property (nonatomic, copy) playBlock myblock;
 
 - (void)helloFourth;
 

@@ -7,14 +7,23 @@
 //
 
 #import "ViewController.h"
-#import "SecondViewController.h"
-#import "ThirdViewController.h"
+#import "DYSDemo01ViewController.h"
+#import "DYSDemo02ViewController.h"
 #import "FourthViewController.h"
 
-@interface ViewController ()
+#import "DYSDog.h"
+
+typedef NSInteger (^blockNameAdd)(NSInteger, NSInteger);
+
+@interface ViewController () <UITableViewDelegate, UITableViewDataSource>
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (nonatomic, copy) NSArray *dataSourceArray;
+
+//returnType (^blockName)(parameterTypes);
+@property (nonatomic, copy) NSInteger (^add)(NSInteger, NSInteger);
+//变量类型 变量名;
+@property (nonatomic, strong) DYSDog *dog;
 
 @end
 
@@ -24,20 +33,16 @@
     [super viewDidLoad];
     self.title = @"原型模式";
     self.dataSourceArray = @[
-                             @{
-                                 @"title": @"block作为匿名函数",
-                                 @"page": @"DYSDemo01ViewController"
-                                 },
-                             @{
-                                 @"title": @"block作为对象",
-                                 @"page": @"DYSDemo02ViewController"
-                                 },
-                             @{
-                                 @"title": @"iOS中的原型模式",
-                                 @"page": @"DYSDemo03ViewController"
-                                 },
-                             ];
-    self.tableView.rowHeight = 50;
+        @{
+            @"title": @"Block的使用",
+            @"page": @"DYSDemo01ViewController"
+        },
+        @{
+            @"title": @"Block的内存管理",
+            @"page": @"DYSDemo02ViewController"
+        },
+    ];
+        self.tableView.tableFooterView = [UIView new];
 }
 
 #pragma mark - UITableViewDataSource
@@ -51,8 +56,8 @@
     if (!cell) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"CellID"];
     }
-    
-    NSDictionary *dict = [self.dataSourceArray objectAtIndex:(self.dataSourceArray.count - indexPath.row - 1)];
+
+    NSDictionary *dict = [self.dataSourceArray objectAtIndex:indexPath.row];
     cell.textLabel.text = [dict objectForKey:@"title"];
     cell.textLabel.numberOfLines = 0;
     return cell;
@@ -61,10 +66,13 @@
 #pragma mark - UITableViewDelegate
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    NSDictionary *dict = [self.dataSourceArray objectAtIndex:(self.dataSourceArray.count - indexPath.row - 1)];
-    NSString *classString = [dict objectForKey:@"page"];
-    UIViewController *vc = [NSClassFromString(classString) new];
+    NSDictionary *dict = [self.dataSourceArray objectAtIndex:indexPath.row];
+    NSString *className = [dict objectForKey:@"page"];
+
+    UIViewController *vc = [NSClassFromString(className) new];
     [self.navigationController pushViewController:vc animated:YES];
+
 }
+
 
 @end
