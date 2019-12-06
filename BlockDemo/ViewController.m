@@ -7,23 +7,11 @@
 //
 
 #import "ViewController.h"
-#import "DYSDemo01ViewController.h"
-#import "DYSDemo02ViewController.h"
-#import "FourthViewController.h"
-
-#import "DYSDog.h"
-
-typedef NSInteger (^blockNameAdd)(NSInteger, NSInteger);
 
 @interface ViewController () <UITableViewDelegate, UITableViewDataSource>
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (nonatomic, copy) NSArray *dataSourceArray;
-
-//returnType (^blockName)(parameterTypes);
-@property (nonatomic, copy) NSInteger (^add)(NSInteger, NSInteger);
-//变量类型 变量名;
-@property (nonatomic, strong) DYSDog *dog;
 
 @end
 
@@ -34,7 +22,7 @@ typedef NSInteger (^blockNameAdd)(NSInteger, NSInteger);
     self.title = @"原型模式";
     self.dataSourceArray = @[
         @{
-            @"title": @"Block的使用",
+            @"title": @"Block的使用(语法)",
             @"page": @"DYSDemo01ViewController"
         },
         @{
@@ -42,7 +30,7 @@ typedef NSInteger (^blockNameAdd)(NSInteger, NSInteger);
             @"page": @"DYSDemo02ViewController"
         },
     ];
-        self.tableView.tableFooterView = [UIView new];
+    self.tableView.tableFooterView = [UIView new];
 }
 
 #pragma mark - UITableViewDataSource
@@ -71,8 +59,6 @@ typedef NSInteger (^blockNameAdd)(NSInteger, NSInteger);
 
     UIViewController *vc = [NSClassFromString(className) new];
     [self.navigationController pushViewController:vc animated:YES];
-
 }
-
 
 @end
