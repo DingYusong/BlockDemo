@@ -164,8 +164,9 @@ typedef NSInteger(^blockNameAdd)(NSInteger, NSInteger);
 /// Block作为属性 （property）
 - (void)dys_test02 {
     //执行
-    self.add(3, 4);
-    [self.dog dys_run];
+    //[self.dog dys_run];
+    //self.add(3, 4);
+    
 
     
     //属性赋值
