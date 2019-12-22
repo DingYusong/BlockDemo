@@ -16,7 +16,6 @@
 		F7B484E72183005E00731093 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B484E62183005E00731093 /* main.m */; };
 		F7B484EF218300E400731093 /* DYSDemo01ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B484EE218300E400731093 /* DYSDemo01ViewController.m */; };
 		F7B484F2218300F400731093 /* DYSDemo02ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B484F1218300F400731093 /* DYSDemo02ViewController.m */; };
-		F7B484F52183010600731093 /* FourthViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B484F42183010600731093 /* FourthViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,8 +35,6 @@
 		F7B484EE218300E400731093 /* DYSDemo01ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DYSDemo01ViewController.m; sourceTree = "<group>"; };
 		F7B484F0218300F400731093 /* DYSDemo02ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DYSDemo02ViewController.h; sourceTree = "<group>"; };
 		F7B484F1218300F400731093 /* DYSDemo02ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DYSDemo02ViewController.m; sourceTree = "<group>"; };
-		F7B484F32183010600731093 /* FourthViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FourthViewController.h; sourceTree = "<group>"; };
-		F7B484F42183010600731093 /* FourthViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FourthViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -78,8 +75,6 @@
 				F7B484EE218300E400731093 /* DYSDemo01ViewController.m */,
 				F7B484F0218300F400731093 /* DYSDemo02ViewController.h */,
 				F7B484F1218300F400731093 /* DYSDemo02ViewController.m */,
-				F7B484F32183010600731093 /* FourthViewController.h */,
-				F7B484F42183010600731093 /* FourthViewController.m */,
 				F7ABD2BF2399037D0011FB74 /* DYSDog.h */,
 				F7ABD2C02399037D0011FB74 /* DYSDog.m */,
 				F7B484DD2183005C00731093 /* Main.storyboard */,
@@ -161,7 +156,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F7B484F52183010600731093 /* FourthViewController.m in Sources */,
 				F7B484EF218300E400731093 /* DYSDemo01ViewController.m in Sources */,
 				F7ABD2C12399037D0011FB74 /* DYSDog.m in Sources */,
 				F7B484F2218300F400731093 /* DYSDemo02ViewController.m in Sources */,

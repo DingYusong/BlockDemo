@@ -11,7 +11,10 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface DYSDog : NSObject
+
+@property (nonatomic, copy) NSString *name;
 - (void)dys_run;
+
 @end
 
 NS_ASSUME_NONNULL_END

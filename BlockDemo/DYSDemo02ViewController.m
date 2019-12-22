@@ -7,22 +7,35 @@
 //
 
 #import "DYSDemo02ViewController.h"
-#import "FourthViewController.h"
+#import "DYSDog.h"
 
-@interface DYSDemo02ViewController ()
-@property (nonatomic ,copy) NSString *tmpString;
+NSInteger globalInt = 1000;
 
-@property (nonatomic ,copy) playBlock tmpBlock;
+@interface DYSDemo02ViewController () <UITableViewDelegate, UITableViewDataSource>
+
+@property (nonatomic, strong) UITableView *tableView;
+@property (nonatomic, copy) NSArray *dataSourceArray;
+
+@property (nonatomic, strong) DYSDog *dog;
+
+@property (nonatomic, copy) NSString *tmpString;
+
+@property (nonatomic, copy) playBlock tmpBlock;
 
 @end
 
 @implementation DYSDemo02ViewController
 
-- (void)dealloc{
-    NSLog(@"ThirdViewController 释放了");
+- (void)dealloc {
+    NSLog(@"DYSDemo02ViewController 释放了");
 }
 
 /**
+ “如果 block 没有在其他地方被保持，那么它会随着栈生存并且当栈帧（stack frame）返回的时候消失。仅存在于栈上时，block对对象访问的内存管理和生命周期没有任何影响。”
+ 
+ 摘录来自: Yourtion. “禅与 Objective-C 编程艺术。” Apple Books.
+
+ 
  “被复制到堆上，这样，block 会像其他 Cocoa 对象一样增加引用计数。当它们被复制的时候，它会带着它们的捕获作用域一起，retain 他们所有引用的对象。”
  
  “如果一个 block引用了一个栈变量或指针，那么这个block初始化的时候会拥有这个变量或指针的const副本，所以(被捕获之后再在栈中改变这个变量或指针的值)是不起作用的。”
@@ -40,224 +53,399 @@
  */
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-    self.view.backgroundColor = [UIColor whiteColor];
-    
-    
-    
-    //情景1-如果 block 没有在其他地方被保持，那么它会随着栈生存并且当栈帧（stack frame）返回的时候消失。仅存在于栈上时，block对对象访问的内存管理和生命周期没有任何影响。playblock一直在栈中
-//    self.tmpString = @"asdfasdf";
-//    CGFloat blockInt = 10;
-//    void (^playblock)(void) = ^{
-//        NSLog(@"blockInt = %f", blockInt);
-//        NSLog(@"tmpString：%@",self.tmpString);
-//    };
-//    blockInt ++;
-//    NSLog(@"blockInt In stack = %f", blockInt);
-//    playblock();
 
-    
-    
-    //情景2-不会释放因为copy到堆上的block对象，持有self，self的引用计数加一，即使导航控制器退栈引用计数也不为0，所以不会释放。
-    
-//    self.tmpString = @"asdfasdf";
-//    CGFloat blockInt = 10;
-//    self.tmpBlock = ^{
-//        NSLog(@"blockInt = %f", blockInt);
-//        NSLog(@"tmpString：%@",self.tmpString);
-//    };
-//    blockInt ++;
-//    NSLog(@"blockInt In stack = %f", blockInt);
-//    self.tmpBlock();
-    
-    
-    
-    //情景3-会释放因为copy到堆上的block对象，被置为nil，他持有的self的引用计数减一，导航控制器退栈之后引用计数为0，会释放。
-//    self.tmpString = @"asdfasdf";
-//    CGFloat blockInt = 10;
-//    self.tmpBlock = ^{
-//        NSLog(@"blockInt = %f", blockInt);
-//        NSLog(@"tmpString：%@",self.tmpString);
-//    };
-//    blockInt ++;
-//    NSLog(@"blockInt In stack = %f", blockInt);
-//    self.tmpBlock();
-//    self.tmpBlock = nil;
+    self.title = @"Block的内存管理";
 
-    
-    //情景4-会释放因为copy到堆上的block对象，使用过week引用self，不会使self的引用计数加1，导航控制器退栈之后引用计数为0，会释放。
-    self.tmpString = @"asdfasdf";
-    CGFloat blockInt = 10;
-    __weak __typeof(self)weakSelf = self;
-    self.tmpBlock = ^{
-        __strong DYSDemo02ViewController *strongSelf = weakSelf;//此时strongSelf是一个局部变量，block执行完成后，strongSelf释放，self的引用基数为0，self释放，self释放后block的引用计数为减为0，block释放。
-        NSLog(@"blockInt = %f", blockInt);
-        NSLog(@"tmpString：%@",strongSelf.tmpString);
+    self.dataSourceArray = @[
+        @"Block创建的内存区域",
+        @"Block捕获外部局部变量默认行为",
+        @"Block修改外部局部变量",
+        @"Block和Self双向强引用-内存泄漏",
+
+        @"Block 对 self 弱引用",
+        @"Block 对 self 单向强引用",
+        @"Block外弱引用，Block内强引用-最佳实践",
+        @"Block和Self双向强引用-Block执行完,self持有的Block指针置为nil-最佳实践",
+
+        @"Block捕获外部全局变量",
+        @"__block修饰也会增加引用计数，强引用",
+    ];
+
+    UITableView *tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStyleGrouped];
+    [self.view addSubview:tableView];
+    tableView.delegate = self;
+    tableView.dataSource = self;
+    tableView.tableFooterView = [UIView new];
+    self.tableView = tableView;
+}
+
+#pragma mark - UITableViewDataSource
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    return self.dataSourceArray.count;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"CellID"];
+    if (!cell) {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"CellID"];
+    }
+
+    cell.textLabel.text = [self.dataSourceArray objectAtIndex:indexPath.row];
+    cell.textLabel.numberOfLines = 0;
+    return cell;
+}
+
+#pragma mark - UITableViewDelegate
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    switch (indexPath.row) {
+        case 0: {
+            [self dys_test01];
+        } break;
+        case 1: {
+            [self dys_test02];
+        } break;
+        case 2: {
+            [self dys_test03];
+        } break;
+        case 3: {
+            [self dys_test04];
+        } break;
+        case 4: {
+            [self dys_test05];
+        } break;
+        case 5: {
+            [self dys_test06];
+        } break;
+        case 6: {
+            [self dys_test07];
+        } break;
+        case 7: {
+            [self dys_test08];
+        } break;
+        case 8: {
+            [self dys_test09];
+        } break;
+        case 9: {
+            [self dys_test10];
+        } break;
+
+        default:
+            break;
+    }
+}
+
+/*
+ 情景1-如果 block 没有在其他地方被保持，那么它会随着栈生存并且当栈帧（stack frame）返回的时候消失。仅存在于栈上时，block对对象访问的内存管理和生命周期没有任何影响。playblock一直在栈中
+ 
+ 1. block 是在栈上创建的。例如：dys_test01
+ 
+ 1. Block 可以捕获来自外部作用域的变量。例如：dys_test02
+ 2. 默认情况下，Block 中捕获的到变量是不能修改的(变量和指针都不能修改)。例如：dys_test02
+ “Block会捕获栈上的变量(或指针)，将其复制为自己私有的const(变量)。
+ (如果在Block中修改Block块外的)栈上的变量和指针，那么这些变量和指针必须用__block关键字申明(译者注：否则就会跟上面的情况一样只是捕获他们的瞬时值)。”
+
+ 
+ */
+- (void)dys_test01 {
+    //1. block 是在栈上创建的
+    NSInteger (^add)(NSInteger, NSInteger) = ^NSInteger(NSInteger a, NSInteger b) {
+        return a + b;
     };
-    blockInt ++;
-    NSLog(@"blockInt In stack = %f", blockInt);
-    self.tmpBlock();
+    DYSDog *aDog = [DYSDog new];
+    DYSDog *bDog = [DYSDog new];
 
-    
-    //数值逻辑
-    
-    //情景5-“__block 变量不会在 block 中被持有”,“这个指针或者原始的类型依赖它们在的栈”从打印结果可以看出tmpBlock中的blockInt没有被拷贝到堆上，任然引用的是栈中的blockInt。
-//        self.tmpString = @"asdfasdf";
-//        __block CGFloat blockInt = 10;
-//        __weak __typeof(self)weakSelf = self;
-//        self.tmpBlock = ^{
-//            NSLog(@"blockInt = %f", blockInt);
-//            NSLog(@"tmpString：%@",weakSelf.tmpString);
-//        };
-//        blockInt ++;
-//        NSLog(@"blockInt In stack = %f", blockInt);
-//        self.tmpBlock();
+    NSLog(@"addBlock: %p", add);  // addBlock: 0x108aef200
+    NSLog(@"aDog: %p", aDog);     //aDog: 0x600003bb4650
+    NSLog(@"bDog: %p", bDog);     //bDog: 0x600003bb4670
 
-    
-    
-    //情景6 - block传递
-//    self.tmpString = @"asdfasdf";
-//    __block CGFloat blockInt = 10;
-//    __weak __typeof(self)weakSelf = self;
-//    self.tmpBlock = ^{
-//        NSLog(@"blockInt = %f", blockInt);
-//        NSLog(@"tmpString：%@",weakSelf.tmpString);
-//        [weakSelf helloWorld1];
-//        [weakSelf helloWorld2];
-//    };
-//    blockInt ++;
-//    NSLog(@"blockInt In stack = %f", blockInt);
-//    self.tmpBlock();
-//
-//    UIButton *btn = [UIButton buttonWithType:UIButtonTypeCustom];
-//    btn.frame = CGRectMake(0, 0, 100, 30);
-//    btn.center = self.view.center;
-//    [btn setTitle:@"跳转" forState:UIControlStateNormal];
-//    [btn setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
-//    [btn addTarget:self action:@selector(btnClick:) forControlEvents:UIControlEventTouchUpInside];
-//    [self.view addSubview:btn];
-    
-    
-    //情景7-
-//    self.tmpString = @"asdfasdf";
-//    CGFloat blockInt = 10;
-//    __weak NSString *stackString = @"stackString";
-//    
-//    void (^playblock)(void) = ^{
-//        NSLog(@"blockInt = %f", blockInt);
-//        NSLog(@"tmpString：%@",self.tmpString);
-//        
-//        dispatch_async(dispatch_queue_create(DISPATCH_QUEUE_PRIORITY_DEFAULT, NULL), ^{
-//            
-//            for (int i = 0; i < 10; i++) {
-//                // 模拟一个耗时的任务
-//                [NSThread sleepForTimeInterval:1];
-//            }
-//            
-//            NSLog(@"耗时的任务 结束 blockInt = %f", blockInt);
-//            NSLog(@"stackString:%@",stackString);
-//        });
-//        
-//    };
-//    blockInt ++;
-//    NSLog(@"blockInt In stack = %f", blockInt);
-//    playblock();
+    //2.block捕获指针，block被分配到堆上
+    NSInteger (^add2)(NSInteger, NSInteger) = ^NSInteger(NSInteger a, NSInteger b) {
+        [aDog dys_run];
+        NSLog(@"aDogBlock: %p", aDog);  //aDog: 0x60000219a5f0
+        return a + b;
+    };
 
-    
-    
-    //情景8 -
-//    self.tmpString = @"asdfasdf";
-//    __block CGFloat blockInt = 10;
-//    __weak __typeof(self)weakSelf = self;
-//    self.tmpBlock = ^{
-//        NSLog(@"blockInt = %f", blockInt);
-//        NSLog(@"tmpString：%@",weakSelf.tmpString);
-//        [weakSelf helloWorld1];
-//        [weakSelf helloWorld2];
-//    };
-//    blockInt ++;
-//    NSLog(@"blockInt In stack = %f", blockInt);
-//    self.tmpBlock();
-//
-//    UIButton *btn = [UIButton buttonWithType:UIButtonTypeCustom];
-//    btn.frame = CGRectMake(0, 0, 100, 30);
-//    btn.center = self.view.center;
-//    [btn setTitle:@"跳转" forState:UIControlStateNormal];
-//    [btn setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
-//    [btn addTarget:self action:@selector(btnClick:) forControlEvents:UIControlEventTouchUpInside];
-//    [self.view addSubview:btn];
+    add2(3, 5);
+    NSLog(@"add2Block: %p", add2);  // add2Block: 0x600003c2c840
+    NSLog(@"aDog: %p", aDog);       //aDog: 0x600003bb4650
 
-    
-    //情景9 -
-//    btn = [UIButton buttonWithType:UIButtonTypeCustom];
-//    btn.frame = CGRectMake(0, 0, 100, 30);
-//    btn.center = CGPointMake(self.view.center.x, self.view.center.y + 50);
-//    [btn setTitle:@"情景9-跳转2" forState:UIControlStateNormal];
-//    [btn setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
-//    [btn addTarget:self action:@selector(btn2Click:) forControlEvents:UIControlEventTouchUpInside];
-//    [self.view addSubview:btn];
-}
+    //3.block捕获变量，block被分配到堆上
+    NSInteger blockInt = 5;
+    NSInteger (^add3)(NSInteger, NSInteger) = ^NSInteger(NSInteger a, NSInteger b) {
+        return a + b + blockInt;
+    };
 
-//情景8
--(void)btnClick:(UIButton *)btn{
-    FourthViewController *vc = [[FourthViewController alloc] init];
-    vc.myblock = self.tmpBlock;
-    [self.navigationController pushViewController:vc animated:YES];
-}
+    NSLog(@"add3Block: %p", add3);  // add3Block: 0x6000034a1380
 
-//情景9
--(void)btn2Click:(UIButton *)btn{
-    FourthViewController *vc = [[FourthViewController alloc] init];
-    [self.navigationController pushViewController:vc animated:YES];
-    __weak FourthViewController* weakvc = vc;
-    self.tmpString = @"asdfasdf";
-    CGFloat blockInt = 10;
-    __weak NSString *stackString = @"stackString";
-    
+    //4. block赋值给属性Block的地址不会变化。在栈中的还在栈中，在堆中的还在堆中。
     void (^playblock)(void) = ^{
-        __strong FourthViewController *stongVC = weakvc;
-        NSLog(@"blockInt = %f", blockInt);
-        NSLog(@"tmpString：%@",self.tmpString);
-        dispatch_async(dispatch_queue_create(DISPATCH_QUEUE_PRIORITY_DEFAULT, NULL), ^{
-            for (int i = 0; i < 5; i++) {
-                // 模拟一个耗时的任务
-                [NSThread sleepForTimeInterval:1];
+    };
+    NSLog(@"playblock: %p", playblock);  // playblock: 0x10b7d0270
+    self.tmpBlock = playblock;
+    NSLog(@"playblock: %p", playblock);          // playblock: 0x10b7d0270
+    NSLog(@"self.tmpBlock: %p", self.tmpBlock);  // self.tmpBlock: 0x10b7d0270
+
+    void (^playblock2)(void) = ^{
+        [aDog dys_run];
+    };
+    NSLog(@"playblock2: %p", playblock2);  // playblock2: 0x600001eec0c0
+    self.tmpBlock = playblock2;
+    NSLog(@"playblock2: %p", playblock2);        // playblock2: 0x600001eec0c0
+    NSLog(@"self.tmpBlock: %p", self.tmpBlock);  // self.tmpBlock: 0x600001eec0c0
+
+    //block捕获全局变量则还在栈中。可以改变全局变量。
+    void (^playblock3)(void) = ^{
+        globalInt++;
+        NSLog(@"globalIntB:%td", globalInt);  //globalIntB:1001
+    };
+    playblock3();
+    globalInt++;
+    NSLog(@"globalInt:%td", globalInt);  //globalInt:1002
+
+    NSLog(@"playblock3: %p", playblock3);  // playblock3: 0x100c302d0
+    self.tmpBlock = playblock3;
+    NSLog(@"playblock3: %p", playblock3);        // playblock3: 0x100c302d0
+    NSLog(@"self.tmpBlock: %p", self.tmpBlock);  // self.tmpBlock: 0x100c302d0
+}
+
+- (void)dys_test02 {
+
+    CGFloat blockInt = 10;
+
+    DYSDog *aDog = [DYSDog new];
+    aDog.name = @"aaa";
+    NSLog(@"aDog: %p", aDog);            //aDog: 0x60000141a350
+    NSLog(@"&aDog: %p", &aDog);          //&aDog: 0x7ffee4e8e8a0
+    NSLog(@"&blockInt: %p", &blockInt);  //&blockInt: 0x7ffeeb4e08a8
+
+    NSLog(@"aDogRetainCountBefore:%td", CFGetRetainCount((__bridge CFTypeRef)(aDog)));  //aDogRetainCountBefore:1
+
+    void (^playblock)(void) = ^{
+        //1. Block 可以捕获来自外部作用域的变量。注意捕获二字。但是不能修改外部变量。相当于拿到了外部变量的const版本。
+        //2. 默认情况下，Block 中捕获的到变量是不能修改的.
+        //blockInt ++;//Variable is not assignable (missing __block type specifier)
+        //aDog = [DYSDog new];//Variable is not assignable (missing __block type specifier)
+
+        aDog.name = @"bbb";  //注意是指针不能变化，也就是所指向的对象的地址不能变，但是对象的内容可以变化。
+
+        NSLog(@"aDog: %p", aDog);            //aDog: 0x60000141a350
+        NSLog(@"&aDog: %p", &aDog);          //&aDog: 0x600001adefc0
+        NSLog(@"&blockInt: %p", &blockInt);  //&blockInt: 0x6000018633e8
+
+        //引用计数并不是简单的+1,而是加2,这是由于block在创建的时候在栈上,而在赋值给全局变量的时候,被拷贝到了堆上
+        NSLog(@"aDogRetainCountBlock:%td", CFGetRetainCount((__bridge CFTypeRef)(aDog)));  //aDogRetainCountBlock:3
+    };
+    playblock();
+
+    NSLog(@"堆%@", [playblock class]);
+    NSLog(@"栈%@", [^() {
+              NSLog(@"aDog对象地址:%@", aDog);
+          } class]);
+    /*
+     2019-12-06 17:03:39.738443+0800 BlockDemo[94302:11678459] 堆__NSMallocBlock__
+     2019-12-06 17:03:39.738748+0800 BlockDemo[94302:11678459] 栈__NSStackBlock__
+     */
+
+    NSLog(@"aDog: %p", aDog);            //aDog: 0x60000141a350
+    NSLog(@"&aDog: %p", &aDog);          //&aDog: 0x7ffee4e8e8a0
+    NSLog(@"&blockInt: %p", &blockInt);  //&blockInt: 0x7ffeeb4e08a8
+
+    NSLog(@"aDogRetainCountAfter:%td", CFGetRetainCount((__bridge CFTypeRef)(aDog)));  //aDogRetainCountAfter:3
+
+    NSLog(@"playblock:%p", playblock);  //playblock:0x60000068c120
+
+    playblock = nil;
+
+    NSLog(@"aDogRetainCountAfter:%td", CFGetRetainCount((__bridge CFTypeRef)(aDog)));  //aDogRetainCountAfter:2
+
+    /*
+     综上观察得到：
+     1.blockInt的地址 和 aDog指针的地址，被Block捕获后变化了。
+     2.aDog的RetainCount加1。
+     3.Block捕获的变量和指针，修改后，外部变量不变，（指针的地址和变量的地址）。
+     */
+}
+
+- (void)dys_test03 {
+
+    __block CGFloat blockInt = 10;
+
+    __block DYSDog *aDog = [DYSDog new];
+    aDog.name = @"aaa";
+    NSLog(@"aDog: %p", aDog);            //aDog: 0x6000002987a0
+    NSLog(@"&aDog: %p", &aDog);          //&aDog: 0x7ffee36ed888
+    NSLog(@"&blockInt: %p", &blockInt);  //&blockInt: 0x7ffee36ed8a8
+
+    NSLog(@"aDogRetainCountBefore:%td", CFGetRetainCount((__bridge CFTypeRef)(aDog)));  //aDogRetainCountBefore:1
+
+    void (^playblock)(void) = ^{
+        NSLog(@"aDog: %p", aDog);            //aDog: 0x6000002987a0
+        NSLog(@"&aDog: %p", &aDog);          //&aDog: 0x600000ee4d78
+        NSLog(@"&blockInt: %p", &blockInt);  //&blockInt: 0x6000000c5ad8
+
+        blockInt++;
+        aDog = [DYSDog new];
+
+        NSLog(@"aDog: %p", aDog);            //aDog: 0x600000294eb0
+        NSLog(@"&aDog: %p", &aDog);          //&aDog: 0x600000ee4d78
+        NSLog(@"&blockInt: %p", &blockInt);  //&blockInt: 0x6000000c5ad8
+
+        NSLog(@"aDogRetainCountBlock:%td", CFGetRetainCount((__bridge CFTypeRef)(aDog)));  //aDogRetainCountBlock:1
+    };
+    playblock();
+
+    NSLog(@"aDog: %p", aDog);            //aDog: 0x600000294eb0
+    NSLog(@"&aDog: %p", &aDog);          //&aDog: 0x600000ee4d78
+    NSLog(@"&blockInt: %p", &blockInt);  //&blockInt: 0x6000000c5ad8
+
+    NSLog(@"aDogRetainCountAfter:%td", CFGetRetainCount((__bridge CFTypeRef)(aDog)));  //aDogRetainCountAfter:1
+
+    NSLog(@"playblock:%p", playblock);  //playblock:0x600000ee4fc0
+
+    playblock = nil;
+
+    NSLog(@"aDogRetainCountAfter:%td", CFGetRetainCount((__bridge CFTypeRef)(aDog)));  //aDogRetainCountAfter:1
+
+    /*
+         综上观察得到：
+         1.blockInt的地址 和 aDog指针的地址，被Block捕获后变化了。
+         2.aDog的RetainCount未增加说明是week引用。
+         3.Block捕获的变量和指针，修改后，外部变量同时跟着变化（指针的地址和变量的地址）。
+         */
+}
+- (void)dys_test04 {
+    self.dog = [DYSDog new];
+    void (^playblock)(void) = ^{
+        [self.dog dys_run];
+    };
+    self.tmpBlock = playblock;
+    /*
+     双向强引用，内存泄漏
+     */
+}
+
+- (void)dys_test05 {
+
+    self.dog = [DYSDog new];
+    __weak typeof(self) weakSelf = self;
+
+    void (^playblock)(void) = ^{
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(10 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            if (!weakSelf) {
+                NSLog(@"weakSelf已经释放");
             }
-            NSLog(@"耗时的任务 结束 blockInt = %f", blockInt);
-            NSLog(@"stackString:%@",stackString);
-            [stongVC helloFourth];
+            else {
+                [weakSelf.dog dys_run];
+            }
         });
     };
-    blockInt ++;
-    NSLog(@"blockInt In stack = %f", blockInt);
+
+    //    self.tmpBlock = playblock;
+
     playblock();
-    
-    void (^blockName)(void) = ^void{
-        NSLog(@"block running");
+
+    /*
+     Block 在堆上，是一个对象，有自己完整的生命周期。
+     
+     2019-12-06 15:19:24.054381+0800 BlockDemo[92920:11511478] DYSDemo02ViewController 释放了
+     2019-12-06 15:19:32.573323+0800 BlockDemo[92920:11511478] weakSelf已经释放
+
+     Block 对 self 单向弱引用，self先释放，block执行的时候self已经为nil。
+     
+     Block 和 self 循环引用，但是block对self是弱引用，self先释放，block执行的时候self已经为nil。
+     */
+}
+
+- (void)dys_test06 {
+    self.dog = [DYSDog new];
+
+    void (^playblock)(void) = ^{
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(10 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            if (!self) {
+                NSLog(@"weakSelf已经释放");
+            }
+            else {
+                [self.dog dys_run];
+            }
+        });
     };
-    [self executeBlock:blockName];
-    
-    
-    [self executeBlock:^ void {
-        NSLog(@"haha");
-    }];
+
+    //    self.tmpBlock = playblock;
+
+    playblock();
+
+    /*
+     Block 对 self 单向强引用，Block释放后self也释放了
+     
+     2019-12-06 15:17:57.072201+0800 BlockDemo[92920:11511478] dog run
+     2019-12-06 15:17:57.072412+0800 BlockDemo[92920:11511478] DYSDemo02ViewController 释放了
+
+     */
 }
 
+- (void)dys_test07 {
 
--(void)executeBlock:(void(^)(void))completion{
-    
-    self.tmpBlock = completion;
+    self.dog = [DYSDog new];
+    __weak typeof(self) weakSelf = self;
+
+    void (^playblock)(void) = ^{
+        __strong typeof(weakSelf) strongSelf = weakSelf;
+        if (!strongSelf) {
+            return;
+        }
+        [strongSelf.dog dys_run];
+    };
+    self.tmpBlock = playblock;
+    /*
+ 在Block外部使用弱引用，是为了打破强引用循环。
+ 在Block内部使用强引用是为了抢占执行的鲁棒性，防止执行过程中self变成nil。
+ */
+}
+
+- (void)dys_test08 {
+
+    self.dog = [DYSDog new];
+    void (^playblock)(void) = ^{
+        [self.dog dys_run];
+    };
+    self.tmpBlock = playblock;
     self.tmpBlock();
+
+    //主动打破引用循环
+    self.tmpBlock = nil;
 }
 
-- (void)helloWorld1{
-    NSLog(@"HelloWorld1");
+- (void)dys_test09 {
+
+    void (^playblock)(void) = ^{
+        globalInt++;
+    };
+    self.tmpBlock = playblock;
+    self.tmpBlock();
+
+    //主动打破引用循环
+    self.tmpBlock = nil;
 }
 
-- (void)helloWorld2{
-    NSLog(@"HelloWorld2");
+- (void)dys_test10 {
+    /*
+     __strong： 赋值给这个变量的对象会自动被retain一次，如果在block中引用它，block也会retain它一次。
+     __unsafe_unretained： 赋值给这个变量不会被retain，也就是说被他修饰的变量的存在不能保证持有对象的可靠性，它可能已经被释放了，而且留下了一个不安全的指针。不会被block retain。
+     __week：类似于__unsafe_unretained，只是如果所持有的对象被释放后，变量会自动被设置为nil，这样更安全些，不过只在IOS5.0以上的系统支持，同样不会被block retain。
+      __block 关键字修饰一个变量，表示这个变量能在block中被修改（值修改，而不是修改对象中的某一个属性，可以理解为修改指针的指向）。会被自动retain。
+     
+     */
+
+    self.dog = [DYSDog new];
+    __block typeof(self) weakSelf = self;
+
+    void (^playblock)(void) = ^{
+        [weakSelf.dog dys_run];
+    };
+    self.tmpBlock = playblock;
+    //形成了强应用循环。
 }
-
-
 
 @end

@@ -7,12 +7,6 @@
 //
 
 #import "ViewController.h"
-#import "DYSDemo01ViewController.h"
-#import "DYSDemo02ViewController.h"
-#import "FourthViewController.h"
-
-#import "DYSDog.h"
-
 
 @interface ViewController () <UITableViewDelegate, UITableViewDataSource>
 
@@ -28,7 +22,7 @@
     self.title = @"原型模式";
     self.dataSourceArray = @[
         @{
-            @"title": @"Block的使用",
+            @"title": @"Block的使用(语法)",
             @"page": @"DYSDemo01ViewController"
         },
         @{
@@ -36,7 +30,7 @@
             @"page": @"DYSDemo02ViewController"
         },
     ];
-        self.tableView.tableFooterView = [UIView new];
+    self.tableView.tableFooterView = [UIView new];
 }
 
 #pragma mark - UITableViewDataSource
@@ -65,8 +59,6 @@
 
     UIViewController *vc = [NSClassFromString(className) new];
     [self.navigationController pushViewController:vc animated:YES];
-
 }
-
 
 @end
