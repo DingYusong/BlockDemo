@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		35B6BA0324F7FBF000828577 /* DYSCat.m in Sources */ = {isa = PBXBuildFile; fileRef = 35B6BA0224F7FBF000828577 /* DYSCat.m */; };
 		F7ABD2C12399037D0011FB74 /* DYSDog.m in Sources */ = {isa = PBXBuildFile; fileRef = F7ABD2C02399037D0011FB74 /* DYSDog.m */; };
 		F7B484D92183005C00731093 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B484D82183005C00731093 /* AppDelegate.m */; };
 		F7B484DC2183005C00731093 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B484DB2183005C00731093 /* ViewController.m */; };
@@ -19,6 +20,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		35B6BA0124F7FBF000828577 /* DYSCat.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DYSCat.h; sourceTree = "<group>"; };
+		35B6BA0224F7FBF000828577 /* DYSCat.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DYSCat.m; sourceTree = "<group>"; };
 		F7ABD2BF2399037D0011FB74 /* DYSDog.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DYSDog.h; sourceTree = "<group>"; };
 		F7ABD2C02399037D0011FB74 /* DYSDog.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DYSDog.m; sourceTree = "<group>"; };
 		F7B484D42183005C00731093 /* BlockDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BlockDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -77,6 +80,8 @@
 				F7B484F1218300F400731093 /* DYSDemo02ViewController.m */,
 				F7ABD2BF2399037D0011FB74 /* DYSDog.h */,
 				F7ABD2C02399037D0011FB74 /* DYSDog.m */,
+				35B6BA0124F7FBF000828577 /* DYSCat.h */,
+				35B6BA0224F7FBF000828577 /* DYSCat.m */,
 				F7B484DD2183005C00731093 /* Main.storyboard */,
 				F7B484E02183005E00731093 /* Assets.xcassets */,
 				F7B484E22183005E00731093 /* LaunchScreen.storyboard */,
@@ -162,6 +167,7 @@
 				F7B484DC2183005C00731093 /* ViewController.m in Sources */,
 				F7B484E72183005E00731093 /* main.m in Sources */,
 				F7B484D92183005C00731093 /* AppDelegate.m in Sources */,
+				35B6BA0324F7FBF000828577 /* DYSCat.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
