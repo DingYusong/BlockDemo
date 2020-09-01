@@ -10,6 +10,7 @@
 #import "DYSDog.h"
 
 NSInteger globalInt = 1000;
+static NSInteger globalStaticInt = 2000;
 
 @interface DYSDemo02ViewController () <UITableViewDelegate, UITableViewDataSource>
 
@@ -21,6 +22,8 @@ NSInteger globalInt = 1000;
 @property (nonatomic, copy) NSString *tmpString;
 
 @property (nonatomic, copy) playBlock tmpBlock;
+
+@property (nonatomic, assign) NSInteger propertyInt;
 
 @end
 
@@ -73,6 +76,9 @@ NSInteger globalInt = 1000;
         @"全局block",
         @"栈Block",
         @"堆Block",
+        
+        @"Block变量捕获-值捕获/指针捕获",
+        @"Block变量捕获-捕获后变量的关系",
     ];
 
     UITableView *tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStyleGrouped];
@@ -103,44 +109,7 @@ NSInteger globalInt = 1000;
 #pragma mark - UITableViewDelegate
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    
     [self performSelector:NSSelectorFromString([NSString stringWithFormat:@"dys_test%02tu",indexPath.row+1])];
-    
-//    switch (indexPath.row) {
-//        case 0: {
-//            [self dys_test01];
-//        } break;
-//        case 1: {
-//            [self dys_test02];
-//        } break;
-//        case 2: {
-//            [self dys_test03];
-//        } break;
-//        case 3: {
-//            [self dys_test04];
-//        } break;
-//        case 4: {
-//            [self dys_test05];
-//        } break;
-//        case 5: {
-//            [self dys_test06];
-//        } break;
-//        case 6: {
-//            [self dys_test07];
-//        } break;
-//        case 7: {
-//            [self dys_test08];
-//        } break;
-//        case 8: {
-//            [self dys_test09];
-//        } break;
-//        case 9: {
-//            [self dys_test10];
-//        } break;
-//
-//        default:
-//            break;
-//    }
 }
 
 /*
@@ -152,7 +121,6 @@ NSInteger globalInt = 1000;
  2. 默认情况下，Block 中捕获的到变量是不能修改的(变量和指针都不能修改)。例如：dys_test02
  “Block会捕获栈上的变量(或指针)，将其复制为自己私有的const(变量)。
  (如果在Block中修改Block块外的)栈上的变量和指针，那么这些变量和指针必须用__block关键字申明(译者注：否则就会跟上面的情况一样只是捕获他们的瞬时值)。”
-
  
  */
 - (void)dys_test01 {
@@ -553,7 +521,118 @@ NSInteger globalInt = 1000;
     
 }
 
+#pragma mark - block变量捕获
 
+/*
+ Block捕获
+ 局部变量：变量地址不一样，但是值一样,说明复制了一份数据，是值捕获（对于常量类型捕获的是值，对于指针类型的值是所指变量的地址）。是两个变量。
+ 局部静态变量： 变量地址一样，是指针捕获。
+ 全局变量：变量地址一样，是指针捕获。
+ 全局静态变量：变量地址一样，是指针捕获。
+ __block 局部变量：变量地址一样，是指针捕获。是一个变量。
+ */
+-(void)dys_test14 {
+    NSInteger num = 100;
+    __block NSInteger blockNum = 100;
+    DYSDog *dog = [DYSDog new];
+    __block DYSDog *blockDog = [DYSDog new];
+    static NSInteger staticNum = 200;
+    void (^heapBlock)(void) = ^(){
+        NSLog(@"block内部&num：%p,num:%tu",&num,num);
+        NSLog(@"block内部&dog：%p,*dog:%p",&dog,dog);
+        NSLog(@"block内部&blockNum：%p,blockNum:%tu",&blockNum,blockNum);
+        NSLog(@"block内部&blockDog：%p,*blockDog:%p",&blockDog,blockDog);
+        NSLog(@"block内部&staticNum：%p",&staticNum);
+        NSLog(@"block内部&globalInt：%p",&globalInt);
+        NSLog(@"block内部&globalStaticInt：%p",&globalStaticInt);
+    };
+    
+    NSLog(@"block外部&num：%p,num:%tu",&num,num);
+    NSLog(@"block外部&dog：%p,*dog:%p",&dog,dog);
+    NSLog(@"block外部&blockNum：%p,blockNum:%tu",&blockNum,blockNum);
+    NSLog(@"block外部&blockDog：%p,*blockDog:%p",&blockDog,blockDog);
+    NSLog(@"block外部&staticNum：%p",&staticNum);
+    NSLog(@"block外部&globalInt：%p",&globalInt);
+    NSLog(@"block外部&globalStaticInt：%p",&globalStaticInt);
+
+
+    heapBlock();
+    
+/*
+ 2020-09-02 06:22:33.689163+0800 BlockDemo[9557:580093] block外部&num：0x7ffedfed88a8,num:100
+ 2020-09-02 06:22:33.689415+0800 BlockDemo[9557:580093] block外部&dog：0x7ffedfed8880,*dog:0x600000beb3b0
+ 2020-09-02 06:22:33.689606+0800 BlockDemo[9557:580093] block外部&blockNum：0x60000097f3b8,blockNum:100
+ 2020-09-02 06:22:33.689723+0800 BlockDemo[9557:580093] block外部&blockDog：0x60000077ee48,*blockDog:0x600000beb600
+ 2020-09-02 06:22:33.689827+0800 BlockDemo[9557:580093] block外部&staticNum：0x10fd33328
+ 2020-09-02 06:22:33.689937+0800 BlockDemo[9557:580093] block外部&globalInt：0x10fd33320
+ 2020-09-02 06:22:33.690051+0800 BlockDemo[9557:580093] block外部&globalStaticInt：0x10fd33330
+ 2020-09-02 06:22:33.690144+0800 BlockDemo[9557:580093] block内部&num：0x600001ce0e78,num:100
+ 2020-09-02 06:22:33.690406+0800 BlockDemo[9557:580093] block内部&dog：0x600001ce0e60,*dog:0x600000beb3b0
+ 2020-09-02 06:22:33.690815+0800 BlockDemo[9557:580093] block内部&blockNum：0x60000097f3b8,blockNum:100
+ 2020-09-02 06:22:33.691190+0800 BlockDemo[9557:580093] block内部&blockDog：0x60000077ee48,*blockDog:0x600000beb600
+ 2020-09-02 06:22:33.691601+0800 BlockDemo[9557:580093] block内部&staticNum：0x10fd33328
+ 2020-09-02 06:22:33.691996+0800 BlockDemo[9557:580093] block内部&globalInt：0x10fd33320
+ 2020-09-02 06:22:33.692336+0800 BlockDemo[9557:580093] block内部&globalStaticInt：0x10fd33330
+ */
+}
+
+/*
+Block捕获
+局部变量：  变量地址不一样，说明复制了一份数据，是值捕获。局部变量是值捕获，所以局部变量不会随着外部变量的变化而变化。从num和dog可以看出，局部变量被捕获后，相当于复制了一份数据，内部和外部没有关系了。是两个变量。
+局部静态变量： 变量地址一样，是指针捕获。
+全局变量：变量地址一样，是指针捕获。
+全局静态变量：变量地址一样，是指针捕获。 是一个变量。
+*/
+-(void)dys_test15 {
+    NSInteger num = 100;
+    __block NSInteger blockNum = 100;
+    DYSDog *dog = [DYSDog new];
+    __block DYSDog *blockDog = [DYSDog new];
+    static NSInteger staticNum = 200;
+    void (^heapBlock)(void) = ^(){
+        NSLog(@"block内部&num：%p,num:%tu",&num,num);
+        NSLog(@"block内部&dog：%p,*dog:%p",&dog,dog);
+        NSLog(@"block外部&blockNum：%p,blockNum:%tu",&blockNum,blockNum);
+        NSLog(@"block外部&blockDog：%p,*blockDog:%p",&blockDog,blockDog);
+        NSLog(@"block内部staticNum：%tu",++staticNum);
+        NSLog(@"block内部globalInt：%tu",++globalInt);
+        NSLog(@"block内部globalStaticInt：%tu",++globalStaticInt);
+    };
+    
+    num++;
+    NSLog(@"block外部&num：%p,num:%tu",&num,num);
+    dog = [DYSDog new];
+    NSLog(@"block外部&dog：%p,*dog:%p",&dog,dog);
+    
+    blockNum++;
+    NSLog(@"block外部&blockNum：%p,blockNum:%tu",&blockNum,blockNum);
+    blockDog = [DYSDog new];
+    NSLog(@"block外部&blockDog：%p,*blockDog:%p",&blockDog,blockDog);
+        
+    NSLog(@"block外部staticNum：%tu",++staticNum);
+    NSLog(@"block外部globalInt：%tu",++globalInt);
+    NSLog(@"block外部globalStaticInt：%tu",++globalStaticInt);
+
+
+    heapBlock();
+    
+/*
+ 2020-09-02 06:27:29.842104+0800 BlockDemo[9615:582610] block外部&num：0x7ffeedbf48a8,num:101
+ 2020-09-02 06:27:29.842280+0800 BlockDemo[9615:582610] block外部&dog：0x7ffeedbf4880,*dog:0x600001a32b70
+ 2020-09-02 06:27:29.842405+0800 BlockDemo[9615:582610] block外部&blockNum：0x60000189d1f8,blockNum:101
+ 2020-09-02 06:27:29.842549+0800 BlockDemo[9615:582610] block外部&blockDog：0x600001698268,*blockDog:0x600001a1c320
+ 2020-09-02 06:27:29.842656+0800 BlockDemo[9615:582610] block外部staticNum：201
+ 2020-09-02 06:27:29.842758+0800 BlockDemo[9615:582610] block外部globalInt：1001
+ 2020-09-02 06:27:29.842876+0800 BlockDemo[9615:582610] block外部globalStaticInt：2001
+ 2020-09-02 06:27:29.842985+0800 BlockDemo[9615:582610] block内部&num：0x600000d44bf8,num:100
+ 2020-09-02 06:27:29.843217+0800 BlockDemo[9615:582610] block内部&dog：0x600000d44be0,*dog:0x600001a32960
+ 2020-09-02 06:27:29.843661+0800 BlockDemo[9615:582610] block外部&blockNum：0x60000189d1f8,blockNum:101
+ 2020-09-02 06:27:29.844071+0800 BlockDemo[9615:582610] block外部&blockDog：0x600001698268,*blockDog:0x600001a1c320
+ 2020-09-02 06:27:29.844529+0800 BlockDemo[9615:582610] block内部staticNum：202
+ 2020-09-02 06:27:29.845019+0800 BlockDemo[9615:582610] block内部globalInt：1002
+ 2020-09-02 06:27:29.845444+0800 BlockDemo[9615:582610] block内部globalStaticInt：2002
+ */
+}
 
 
 
