@@ -69,6 +69,10 @@ NSInteger globalInt = 1000;
 
         @"Block捕获外部全局变量",
         @"__block修饰也会增加引用计数，强引用",
+        
+        @"全局block",
+        @"栈Block",
+        @"堆Block",
     ];
 
     UITableView *tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStyleGrouped];
@@ -99,41 +103,44 @@ NSInteger globalInt = 1000;
 #pragma mark - UITableViewDelegate
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    switch (indexPath.row) {
-        case 0: {
-            [self dys_test01];
-        } break;
-        case 1: {
-            [self dys_test02];
-        } break;
-        case 2: {
-            [self dys_test03];
-        } break;
-        case 3: {
-            [self dys_test04];
-        } break;
-        case 4: {
-            [self dys_test05];
-        } break;
-        case 5: {
-            [self dys_test06];
-        } break;
-        case 6: {
-            [self dys_test07];
-        } break;
-        case 7: {
-            [self dys_test08];
-        } break;
-        case 8: {
-            [self dys_test09];
-        } break;
-        case 9: {
-            [self dys_test10];
-        } break;
-
-        default:
-            break;
-    }
+    
+    [self performSelector:NSSelectorFromString([NSString stringWithFormat:@"dys_test%02tu",indexPath.row+1])];
+    
+//    switch (indexPath.row) {
+//        case 0: {
+//            [self dys_test01];
+//        } break;
+//        case 1: {
+//            [self dys_test02];
+//        } break;
+//        case 2: {
+//            [self dys_test03];
+//        } break;
+//        case 3: {
+//            [self dys_test04];
+//        } break;
+//        case 4: {
+//            [self dys_test05];
+//        } break;
+//        case 5: {
+//            [self dys_test06];
+//        } break;
+//        case 6: {
+//            [self dys_test07];
+//        } break;
+//        case 7: {
+//            [self dys_test08];
+//        } break;
+//        case 8: {
+//            [self dys_test09];
+//        } break;
+//        case 9: {
+//            [self dys_test10];
+//        } break;
+//
+//        default:
+//            break;
+//    }
 }
 
 /*
@@ -447,5 +454,107 @@ NSInteger globalInt = 1000;
     self.tmpBlock = playblock;
     //形成了强应用循环。
 }
+
+#pragma mark - Block的几种形式
+/*
+ 全局Block，存储在已初始化数据区（data），不使用外部变量的block是全局block。对全局block进行copy操作仍旧是全局block。
+ 栈Block，存储在栈区（stack），使用外部变量但是未进行copy操作的block是栈block。
+ 堆Block，存储在堆区（heap）,对栈block进行copy操作就是堆block。
+ 
+ copy操作：
+ 
+ 即如果对栈Block进行copy,将会copy到堆区,对堆Block进行copy,将会增加引用计数，对全局Block进行copy,因为是已经初始化的，所以什么也不做。
+ */
+
+/*
+ 全局Block，存储在已初始化数据区（data），不使用外部变量的block是全局block。对全局block进行copy操作仍旧是全局block。
+ */
+-(void)dys_test11 {
+    NSLog(@"%@",^(){
+        NSLog(@"block");
+    });
+    
+    /*
+     2020-09-01 22:38:34.088100+0800 BlockDemo[6750:430352] <__NSGlobalBlock__: 0x10572d3d8>
+     */
+    
+    
+    void(^globalBlock)(void) = ^(){
+        NSLog(@"block");
+    };
+    NSLog(@"globalBlock:%@",globalBlock);
+ 
+    /*
+     2020-09-01 22:52:07.945318+0800 BlockDemo[6972:439034] <__NSGlobalBlock__: 0x10f56a3d8>
+     2020-09-01 22:52:07.945531+0800 BlockDemo[6972:439034] globalBlock:<__NSGlobalBlock__: 0x10f56a3f8>
+     */
+    
+}
+
+
+/*
+ 栈Block，存储在栈区（stack），使用外部变量但是未进行copy操作的block是栈block。
+ */
+-(void)dys_test12 {
+    
+    NSInteger num = 100;
+    
+    NSLog(@"%@",^(){
+        NSLog(@"%tu",num);
+    });
+    
+    /*
+     2020-09-01 22:41:12.600623+0800 BlockDemo[6812:432439] <__NSStackBlock__: 0x7ffee22cc880>
+     */
+    [self dys_testWithBlock:^{
+        NSLog(@"self.tmpString:%@",self.tmpString);
+    }];
+}
+ 
+
+-(void)dys_testWithBlock:(dispatch_block_t)block {
+    block();
+    
+    NSLog(@"%@",block);
+    
+    /*
+     2020-09-01 22:43:52.770562+0800 BlockDemo[6854:434346] <__NSStackBlock__: 0x7ffee1d8d858>
+     */
+    
+    dispatch_block_t tempBlock = block;
+    NSLog(@"tempBlock:%@,block:%@",tempBlock,block);
+    /*
+     2020-09-01 22:57:30.102614+0800 BlockDemo[7060:442743] tempBlock:<__NSMallocBlock__: 0x600000afcc30>,block:<__NSStackBlock__: 0x7ffee0456858>
+
+     */
+    
+}
+
+/*
+ 堆Block，存储在堆区（heap）,对栈block进行copy操作就是堆block。参见上面的 dys_testWithBlock
+ */
+-(void)dys_test13 {
+    
+    NSInteger num = 100;
+    
+    NSLog(@"%@",^(){
+        NSLog(@"%tu",num);
+    });
+    void (^heapBlock)(void) = ^(){
+        NSLog(@"%tu",num);
+    };
+    NSLog(@"heapBlock:%@",heapBlock);
+    /*
+     2020-09-01 22:52:48.284757+0800 BlockDemo[6972:439034] <__NSStackBlock__: 0x7ffee069b880>
+     2020-09-01 22:52:48.285028+0800 BlockDemo[6972:439034] heapBlock:<__NSMallocBlock__: 0x600002bd7e10>
+     */
+    
+    
+    
+}
+
+
+
+
 
 @end
