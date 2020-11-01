@@ -129,6 +129,11 @@ typedef NSInteger (^blockNameAdd)(NSInteger, NSInteger);
         return a + b;
     };
 
+    
+    NSInteger (^blockName2)(NSInteger, NSInteger) = ^NSInteger(NSInteger a, NSInteger b){
+        return a+b;
+    };
+    
     //OC对象声明 变量类型 变量名 = 变量值;
 
     //DYSDog

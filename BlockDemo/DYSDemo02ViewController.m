@@ -442,6 +442,10 @@ static NSInteger globalStaticInt = 2000;
         NSLog(@"block");
     });
     
+    NSLog(@"%@",^(){
+        NSLog(@"__NSGlobalBlock");
+    });
+    
     /*
      2020-09-01 22:38:34.088100+0800 BlockDemo[6750:430352] <__NSGlobalBlock__: 0x10572d3d8>
      */
@@ -495,7 +499,7 @@ static NSInteger globalStaticInt = 2000;
      2020-09-01 22:57:30.102614+0800 BlockDemo[7060:442743] tempBlock:<__NSMallocBlock__: 0x600000afcc30>,block:<__NSStackBlock__: 0x7ffee0456858>
 
      */
-    
+    dispatch_block_t block2 = block; //使用了外部block
 }
 
 /*
